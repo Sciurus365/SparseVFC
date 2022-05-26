@@ -1,5 +1,10 @@
 ---
 title: "demo"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{demo}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 This is a demonstration of the SparseVFC algorithm. This demonstration was adapted from the script in https://github.com/jiayi-ma/VFC.

@@ -13,42 +13,28 @@ knitr::opts_chunk$set(
 )
 ```
 
-# SparseVFC
+# `SparseVFC`: Sparse Vector Field Consensus for Vector Field Learning
 
 <!-- badges: start -->
+[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/SparseVFC)](https://cran.r-project.org/package=SparseVFC)
+[![](https://cranlogs.r-pkg.org/badges/SparseVFC)](https://cran.r-project.org/package=SparseVFC)
 <!-- badges: end -->
 
-The goal of SparseVFC is to ...
+The `SparseVFC` package is an R implementation of the Sparse Vector Field Consensus (SparseVFC) algorithm <https://doi.org/10.1016/j.patcog.2013.05.017> for robust vector field learning. Largely translated from the Matlab functions in <https://github.com/jiayi-ma/VFC>.
+
+See the vignette of the package for a demonstration.
 
 ## Installation
 
-You can install the development version of SparseVFC like so:
+You can install the released version of `SparseVFC` from [CRAN](https://cran.r-project.org/) with:
+
+```r
+install.packages("SparseVFC")
+```
+
+You can install the development version of SparseVFC from [GitHub](https://github.com/) with:
 
 ``` r
-# FILL THIS IN! HOW CAN PEOPLE INSTALL YOUR DEV PACKAGE?
+# install.packages("devtools")
+devtools::install_github("Sciurus365/SparseVFC")
 ```
-
-## Example
-
-This is a basic example which shows you how to solve a common problem:
-
-```{r example}
-library(SparseVFC)
-## basic example code
-```
-
-What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
-
-```{r cars}
-summary(cars)
-```
-
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this. You could also use GitHub Actions to re-render `README.Rmd` every time you push. An example workflow can be found here: <https://github.com/r-lib/actions/tree/v1/examples>.
-
-You can also embed plots, for example:
-
-```{r pressure, echo = FALSE}
-plot(pressure)
-```
-
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub and CRAN.
