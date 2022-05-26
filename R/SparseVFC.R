@@ -5,26 +5,42 @@
 #'
 #' @param X The position of the vectors.
 #' @param Y The value of the vectors.
+#' @param M The number of the basis functions used for sparse approximation. Default value is 16.
 #' @param MaxIter Maximum iteration times. Default value is 500.
-#' @param gamma Percentage of inliers in the samples. This is an initial value
-#' for EM iteration, and it is not important. Default value is 0.9.
+#' @param gamma Percentage of inliers in the samples. This is an initial value for EM iteration, and it is not important. Default value is 0.9.
 #' @param beta Parameter of Gaussian Kernel, \eqn{k(x, y) = exp(-beta*||x-y||^2)}. Default value is 0.1.
 #' @param lambda Represents the trade-off between the goodness of data fit and smoothness of the field. Default value is 3.
-#' @param theta If the posterior probability of a sample being an inlier is
-#' larger than theta, then it will be regarded as an inlier.
-#' Default value is 0.75.
-#' @param a Parameter of the uniform distribution. We assume that the outliers
-#' obey a uniform distribution \eqn{1/a}. Default Value is 10.
+#' @param theta If the posterior probability of a sample being an inlier is larger than theta, then it will be regarded as an inlier. Default value is 0.75.
+#' @param a Parameter of the uniform distribution. We assume that the outliers obey a uniform distribution \eqn{1/a}. Default Value is 10.
 #' @param ecr The minimum limitation of the energy change rate in the iteration process. Default value is 1e-5.
-#' @param minP The posterior probability Matrix P may be singular for matrix
-#' inversion. We set the minimum value of P as `minP`. Default value is 1e-5.
+#' @param minP The posterior probability Matrix P may be singular for matrix inversion. We set the minimum value of P as `minP`. Default value is 1e-5.
 #' @param silent Should the messages be suppressed? Default value is `TRUE`.
 #'
-#' @references The algorithm is described in Ma et al. (2013) \doi{10.1016/j.patcog.2013.05.017}.
+#' @references
+#' The algorithm is described in Ma et al. (2013) \doi{10.1016/j.patcog.2013.05.017}.
 #' This function is translated with permission from Jiayi Ma's Matlab function at \url{https://github.com/jiayi-ma/VFC}.
+#' Also see Zhao et al. (2011) \doi{10.1109/CVPR.2011.5995336} for the earlier VFC algorithm.
+#'
+#' @return A `VFC` object, which is a list containing the following elements:
+#' \describe{
+#' \item{X}{A matrix of the positions of kernels.}
+#' \item{Y}{A matrix of the input vectors.}
+#' \item{beta}{The input value of `beta`.}
+#' \item{V}{A matrix of the estimated vectors.}
+#' \item{C}{A matrix of the coefficients of each kernel.}
+#' \item{P}{A vector of the posterior probability of the input vectors (`Y`) being an inlier.}
+#' \item{VFCIndex}{A vector of indices of the inliers.}
+#' \item{sigma2}{The \eqn{\sigma^2} of the estimations weighted by `P`.}
+#' }
 #'
 #' @export
-SparseVFC <- function(X, Y, MaxIter = 500, gamma = 0.9, beta = 0.1,
+#' @examples
+#' data(church)
+#' set.seed(1614)
+#' VecFld <- SparseVFC(norm_vecs(church$X), norm_vecs(church$Y) - norm_vecs(church$X))
+#' predict(VecFld, c(0, 0))
+SparseVFC <- function(X, Y, M = 16, MaxIter = 500,
+                      gamma = 0.9, beta = 0.1,
                       lambda = 3, theta = 0.75, a = 10, ecr = 1e-5,
                       minP = 1e-5, silent = TRUE) {
   if (!silent) message("Start mismatch removal...\n")
@@ -32,7 +48,6 @@ SparseVFC <- function(X, Y, MaxIter = 500, gamma = 0.9, beta = 0.1,
   D <- ncol(Y)
 
   # Construct kernel matrix K
-  M <- 16
   tmp_X <- unique(X)
   idx <- sample.int(nrow(tmp_X))
   idx <- idx[1:min(M, nrow(tmp_X))]
@@ -107,7 +122,8 @@ SparseVFC <- function(X, Y, MaxIter = 500, gamma = 0.9, beta = 0.1,
 #' @param x,y,beta The variable and parameter values for the funcion
 #' described above.
 #' @seealso [SparseVFC()]
-#' @export
+#' @return The kernel estimation result.
+#' @noRd
 con_K <- function(x, y, beta) {
   n <- nrow(x)
   m <- nrow(y)
@@ -135,30 +151,51 @@ get_P <- function(Y, V, sigma2, gamma, a) {
   return(list(P = P, E = E))
 }
 
-#' Normalize two matrices separately
+#' Normalize (a Matrix of) Vectors
 #'
-#' @param x,y The two matrices.
+#' Normalize the data so that the mean of the vectors is **0** and the variance of the vectors is 1. Here the variance of vectors is calculated by interpreting the deviation as the Euclidean distance, which means the trace of the (population) covariance matrix is 1.
+#'
+#' @param x The matrix to be normalized. Each row of `x` represent a vector.
+#' @return The normalized matrix with an attribution `scale`, which is the scale factor used for normalization.
+#'
 #' @export
-#' @seealso [SparseVFC()]
-norm2 <- function(x, y) {
+#' @examples
+#' norm_vecs(matrix(rep(1, 100), nrow = 2))
+norm_vecs <- function(x) {
   n <- nrow(x)
-  m <- nrow(y)
-
   xm <- colMeans(x)
-  ym <- colMeans(y)
-
   x <- x - matrix(rep(xm, n), nrow = n, byrow = TRUE)
-  y <- y - matrix(rep(ym, m), nrow = m, byrow = TRUE)
-
   xscale <- sqrt(sum(x^2) / n)
-  yscale <- sqrt(sum(y^2) / m)
 
   X <- x / xscale
-  Y <- y / yscale
 
   return(
-    list(
-      X = X, Y = Y, xscale = xscale, yscale = yscale
+    structure(
+      X,
+      scale = xscale
     )
   )
+}
+
+#' Predict Method for VFC Fits.
+#'
+#' Predicted values based on `VFC` objects.
+#'
+#' @param object A `VFC` object generated by [SparseVFC()].
+#' @param newdata A vector specifying the position.
+#' @param ... Not in use.
+#' @return A vector.
+#' @seealso [SparseVFC()]
+#' @export
+predict.VFC <- function(object, newdata, ...) {
+  if (ncol(object$X) != length(newdata)) {
+    stop("The dimension of the `newdata` should be the same as in the model.")
+  }
+  output <- rep(0, length(newdata))
+
+  for (i in 1:nrow(object$X)) {
+    output <- output + con_K(newdata |> matrix(nrow = 1), object$X[i, ] |> matrix(nrow = 1), object$beta) |>
+      as.numeric() * object$C[i, ]
+  }
+  return(output)
 }

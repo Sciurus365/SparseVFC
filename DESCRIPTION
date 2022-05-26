@@ -6,8 +6,8 @@ Authors@R: person(given = "Jingmeng", family = "Cui", email = "jingmeng.cui@outl
 		role = c("aut", "cre"), comment = c(ORCID = "0000-0003-3421-8457"))
 URL: https://github.com/Sciurus365/SparseVFC
 BugReports: https://github.com/Sciurus365/SparseVFC/issues
-Description: An R implementation of the Sparse Vector Field Consensus 
-		(SparseVFC) algorithm <doi:10.1016/j.patcog.2013.05.017> for robust vector 
+Description: The sparse vector field consensus 
+		(SparseVFC) algorithm (Ma et al., 2013 <doi:10.1016/j.patcog.2013.05.017>) for robust vector 
 		field learning. Largely translated from the Matlab functions in <https://github.com/jiayi-ma/VFC>.
 License: GPL (>= 3)
 Encoding: UTF-8
@@ -24,3 +24,4 @@ Suggests:
     knitr
 RoxygenNote: 7.1.2
 VignetteBuilder: knitr
+Roxygen: list(markdown = TRUE)

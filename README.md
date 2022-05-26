@@ -9,9 +9,9 @@
 [![](https://cranlogs.r-pkg.org/badges/SparseVFC)](https://cran.r-project.org/package=SparseVFC)
 <!-- badges: end -->
 
-The `SparseVFC` package is an R implementation of the Sparse Vector
-Field Consensus (SparseVFC) algorithm
-<https://doi.org/10.1016/j.patcog.2013.05.017> for robust vector field
+The `SparseVFC` package is an R implementation of the sparse vector
+field consensus (SparseVFC) algorithm (Ma et al., 2013
+<https://doi.org/10.1016/j.patcog.2013.05.017>) for robust vector field
 learning. Largely translated from the Matlab functions in
 <https://github.com/jiayi-ma/VFC>.
 

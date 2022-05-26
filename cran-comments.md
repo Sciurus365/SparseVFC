@@ -1,4 +1,8 @@
 * This is a new release.
+* This is a re-submission in which I
+	* Added the \value field and several examples for exported functions;
+	* Removed redundancies in DESCRIPTION;
+	* Improved the package structure.
 
 ## Test environments
 

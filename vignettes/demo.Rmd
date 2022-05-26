@@ -29,35 +29,25 @@ X <- church$X
 Y <- church$Y
 CorrectIndex <- church$CorrectIndex
 
-temp_norm <- norm2(X, Y)
-nX <- temp_norm$X
-nY <- temp_norm$Y
+nX <- norm_vecs(X)
+nY <- norm_vecs(Y)
 ```
 
 SparseVFC.
 ```{r}
-VecFld <- SparseVFC(nX, nY - nX, silent = F)
+set.seed(1614)
+VecFld <- SparseVFC(nX, nY - nX, silent = FALSE)
 ```
 
 Make some samples for drawing the victor field.
 ```{r}
 vec <- expand.grid(x = seq(-1.2, 1.2, 0.2), y = seq(-1.2, 1.2, 0.2))
 vec <- vec %>%
-  mutate(v = map2(x, y, function(x, y) {
-    output <- c(0, 0)
-    for (i in 1:nrow(VecFld$X)) {
-      output <- output + con_K(c(x, y) %>% matrix(nrow = 1), VecFld$X[i, ] %>% matrix(nrow = 1), VecFld$beta) %>%
-        as.numeric() * VecFld$C[i, ]
-    }
-    return(list(output))
-  }))
-
-vec <- vec %>%
   rowwise() %>%
+  mutate(v = list(predict(VecFld, c(x, y)))) %>%
   mutate(
     vx = v[1],
-    vy = vx[2],
-    vx = vx[1]
+    vy = v[2]
   )
 ```
 
@@ -69,7 +59,7 @@ tibble(
   VFC = 1:126 %in% VecFld$VFCIndex
 ) %>% table()
 ```
-(Recall: $59/(59+1) = 0.9833$; precision: $59/(59+10) = 0.8551$. Those two performance measures are the same as reported in \doi{10.1109/CVPR.2011.5995336}, indicating a correct replication.)
+(Recall: $59/(59+1) = 0.9833$; precision: $59/(59+10) = 0.8551$. Those two performance measures are the same as reported in Zhao et al., 2011 <https://doi.org/10.1109/CVPR.2011.5995336>, indicating a correct replication.)
 
 Plot the output vector field. (red arrows: correct arrows in the original data; black arrows: incorrect vectors in the original data; gray arrows: learned vector field.)
 ```{r}
