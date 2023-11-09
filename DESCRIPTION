@@ -1,7 +1,7 @@
 Package: SparseVFC
 Type: Package
 Title: Sparse Vector Field Consensus for Vector Field Learning
-Version: 0.1.1
+Version: 0.1.2
 Authors@R: person(given = "Jingmeng", family = "Cui", email = "jingmeng.cui@outlook.com",
 		role = c("aut", "cre"), comment = c(ORCID = "0000-0003-3421-8457"))
 URL: https://github.com/Sciurus365/SparseVFC
@@ -16,7 +16,7 @@ Imports:
     pdist,
     purrr
 Depends: 
-    R (>= 2.10)
+    R (>= 4.1.0)
 Suggests: 
     ggplot2,
     dplyr,
@@ -24,6 +24,6 @@ Suggests:
     rmarkdown,
     grid,
     knitr
-RoxygenNote: 7.2.2
+RoxygenNote: 7.2.3
 VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE)
